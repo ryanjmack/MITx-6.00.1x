@@ -184,7 +184,7 @@ class PlaintextMessage(Message):
 
         Returns: a COPY of self.encrypting_dict
         '''
-        return self.encrypting_dict.copy()
+        return self.encrypting_dict[:]
 
     def get_message_text_encrypted(self):
         '''
@@ -222,7 +222,7 @@ class CiphertextMessage(Message):
             self.message_text (string, determined by input text)
             self.valid_words (list, determined using helper function load_words)
         '''
-        pass #delete this line and replace with your code here
+        Message.__init__(self, text)
 
     def decrypt_message(self):
         '''
@@ -240,14 +240,37 @@ class CiphertextMessage(Message):
         Returns: a tuple of the best shift value used to decrypt the message
         and the decrypted message text using that shift value
         '''
-        pass #delete this line and replace with your code here
 
-#Example test case (PlaintextMessage)
+        # tuple (shift value, string, valid words)
+        best = (0, "", 0)
+
+        # get a copy of the valid words
+        valid_words = self.get_valid_words()
+
+        # iterate over possible shift values testing the amount of valid words per shift
+        for shift in range(0, 26):
+            test = self.apply_shift(shift)
+
+            words = test.split(" ")
+            
+            valid = 0
+            for word in words:
+                if is_word(valid_words, word):
+                    valid += 1
+
+            # after the loop finishes see if that shift had more valid words than the previous best
+            if valid > best[2]:
+                best = (shift, test, valid)
+
+        # (shift value, decrypted string)
+        return (best[0], best[1])
+
+# Example test case (PlaintextMessage)
 plaintext = PlaintextMessage('hello', 2)
 print('Expected Output: jgnnq')
 print('Actual Output:', plaintext.get_message_text_encrypted())
 
-#Example test case (CiphertextMessage)
+# Example test case (CiphertextMessage)
 ciphertext = CiphertextMessage('jgnnq')
 print('Expected Output:', (24, 'hello'))
 print('Actual Output:', ciphertext.decrypt_message())
