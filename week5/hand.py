@@ -63,10 +63,8 @@ class Hand(object):
         Display a string representation of the hand.
         '''
         output = ''
-        hand_keys = sorted(self.hand.keys())
-        for letter in hand_keys:
-            for j in range(self.hand[letter]):
-                output += letter
+        for letter in sorted(self.hand.keys()):
+            output += letter * self.hand[letter]
         return output
 
     def update(self, word):
@@ -82,10 +80,20 @@ class Hand(object):
         word: string
         returns: Boolean (if the word was or was not made)
         """
-        # Your code here
-        raise NotImplementedError()
+        hand_copy = self.hand.copy()
 
+        for char in word:
+            if char in hand_copy:
+                hand_copy[char] -= 1
+            else:
+                return False
 
+            if hand_copy[char] == 0:
+                del hand_copy[char]
+
+        self.hand = hand_copy
+        return True
+        
 myHand = Hand(7)
 print(myHand)
 print(myHand.calculateLen())
