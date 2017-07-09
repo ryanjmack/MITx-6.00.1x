@@ -243,27 +243,28 @@ class CiphertextMessage(Message):
 
         # tuple (shift value, string, valid words)
         best = (0, "", 0)
-
-        # get a copy of the valid words
         valid_words = self.get_valid_words()
 
-        # iterate over possible shift values testing the amount of valid words per shift
         for shift in range(0, 26):
             test = self.apply_shift(shift)
 
             words = test.split(" ")
-            
+
             valid = 0
             for word in words:
                 if is_word(valid_words, word):
                     valid += 1
 
-            # after the loop finishes see if that shift had more valid words than the previous best
             if valid > best[2]:
                 best = (shift, test, valid)
 
-        # (shift value, decrypted string)
         return (best[0], best[1])
+
+def decrypt_story():
+    encrypted_story = CiphertextMessage(get_story_string())
+    decrypted_story = encrypted_story.decrypt_message()
+
+    return decrypted_story
 
 # Example test case (PlaintextMessage)
 plaintext = PlaintextMessage('hello', 2)
@@ -274,3 +275,6 @@ print('Actual Output:', plaintext.get_message_text_encrypted())
 ciphertext = CiphertextMessage('jgnnq')
 print('Expected Output:', (24, 'hello'))
 print('Actual Output:', ciphertext.decrypt_message())
+
+# decrypt the story found in story.txt in the same directory
+decrypt_story()
